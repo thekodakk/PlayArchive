@@ -1,0 +1,186 @@
+<UserControl x:Class="PlayArchive.Views.LibraryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:PlayArchive.Converters"
+             xmlns:views="clr-namespace:PlayArchive.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000">
+
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource BgDarkBrush}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="30">
+
+                <!-- Header Section -->
+                <Grid Margin="0,0,0,24">
+                    <StackPanel>
+                        <TextBlock Text="GAME LIBRARY" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryCyanBrush}" />
+                        <TextBlock Text="Tracked Executables &amp; Titles" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <!-- Search Bar -->
+                        <TextBox Width="240" 
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                 Style="{StaticResource DarkTextBox}" 
+                                 Margin="0,0,12,0" />
+
+                        <!-- Scan PC Button -->
+                        <Button Command="{Binding ScanInstalledGamesCommand}" Style="{StaticResource OutlineButton}" Margin="0,0,12,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🔍" Margin="0,0,8,0" />
+                                <TextBlock Text="Scan PC Games" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Add Game Button -->
+                        <Button Command="{Binding OpenAddGameCommand}" Style="{StaticResource PrimaryButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="➕" Margin="0,0,8,0" />
+                                <TextBlock Text="Add Game" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Scanner Status Banner -->
+                <Border Style="{StaticResource GamingCard}" Background="#1F00F0FF" BorderBrush="{StaticResource PrimaryCyanBrush}" Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="🚀" FontSize="20" Margin="0,0,12,0" VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="AUTOMATIC GAME DISCOVERY" FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryCyanBrush}" />
+                            <TextBlock Text="{Binding ScanStatusText}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Empty Library Placeholder -->
+                <Border Style="{StaticResource GamingCard}" 
+                        Margin="0,20" 
+                        Padding="40" 
+                        Visibility="{Binding FilteredGames.Count, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="🎮" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16" />
+                        <TextBlock Text="No Tracked Games Found" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center" />
+                        <TextBlock Text="Click 'Scan PC Games' to automatically import Steam &amp; Epic titles, or click 'Add Game' to add manually." 
+                                   FontSize="13" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,8,0,24" TextAlignment="Center" />
+                        <Button Command="{Binding ScanInstalledGamesCommand}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🔍" Margin="0,0,8,0" />
+                                <TextBlock Text="Scan PC for Installed Games" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <!-- Game Cards Responsive Grid -->
+                <ItemsControl ItemsSource="{Binding FilteredGames}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="3" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource GamingCard}" Margin="8">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Top Row: Icon + Title + Category -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Width="46" Height="46" CornerRadius="10" Background="{StaticResource PanelDarkBrush}" Margin="0,0,12,0">
+                                            <TextBlock Text="🎮" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis" />
+                                            <Border Background="#2A3447" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" Margin="0,4,0,0">
+                                                <TextBlock Text="{Binding Category}" FontSize="10" Foreground="{StaticResource TextSecondaryBrush}" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Middle Row: Details & Playtime -->
+                                    <StackPanel Grid.Row="1" Margin="0,16,0,16">
+                                        <Grid Margin="0,0,0,6">
+                                            <TextBlock Text="Executable:" FontSize="12" Foreground="{StaticResource TextMutedBrush}" />
+                                            <TextBlock Text="{Binding ExecutableName}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                                        </Grid>
+                                        <Grid Margin="0,0,0,6">
+                                            <TextBlock Text="Total Playtime:" FontSize="12" Foreground="{StaticResource TextMutedBrush}" />
+                                            <TextBlock Text="{Binding FormattedTotalPlayTime}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource PrimaryCyanBrush}" HorizontalAlignment="Right" />
+                                        </Grid>
+                                        <TextBlock Text="{Binding Notes}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" TextWrapping="Wrap" MaxHeight="34" TextTrimming="CharacterEllipsis" Margin="0,4,0,0" />
+                                    </StackPanel>
+
+                                    <!-- Bottom Row: Action Controls -->
+                                    <Grid Grid.Row="2" Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Toggle Tracking Button -->
+                                        <Button Grid.Column="0" 
+                                                Command="{Binding DataContext.ToggleTrackingCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource OutlineButton}" 
+                                                Height="32" Padding="8,0" Margin="0,0,8,0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding IsTrackingEnabled, Converter={StaticResource BoolToVis}}" Foreground="{StaticResource EmeraldBrush}" Margin="0,0,4,0" />
+                                                <TextBlock Text="Tracking Active" FontSize="11" />
+                                            </StackPanel>
+                                        </Button>
+
+                                        <!-- Delete Button -->
+                                        <Button Grid.Column="1" 
+                                                Command="{Binding DataContext.DeleteGameCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource OutlineButton}" 
+                                                Height="32" Width="36" Padding="0">
+                                            <TextBlock Text="🗑️" FontSize="12" />
+                                        </Button>
+                                    </Grid>
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Add Game Modal Overlay -->
+        <Grid Background="#CC0B0E14" Visibility="{Binding IsAddDialogOpen, Converter={StaticResource BoolToVis}}">
+            <Border Style="{StaticResource GamingCard}" Width="520" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ContentControl Content="{Binding AddGameVM}">
+                    <ContentControl.ContentTemplate>
+                        <DataTemplate>
+                            <views:AddGameView />
+                        </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                </ContentControl>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

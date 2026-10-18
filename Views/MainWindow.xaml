@@ -1,0 +1,175 @@
+<Window x:Class="PlayArchive.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:PlayArchive.ViewModels"
+        xmlns:views="clr-namespace:PlayArchive.Views"
+        xmlns:converters="clr-namespace:PlayArchive.Converters"
+        mc:Ignorable="d"
+        Title="PlayArchive - Dashboard &amp; Game Tracker" 
+        Height="780" Width="1200"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#0B0E14"
+        WindowStyle="None">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis" />
+
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <views:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LibraryViewModel}">
+            <views:LibraryView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SessionsViewModel}">
+            <views:SessionsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+            <views:SettingsView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Border Background="#0B0E14" BorderBrush="{StaticResource BorderDarkBrush}" BorderThickness="1" SnapsToDevicePixels="True">
+        <Grid Background="#0B0E14">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Custom TitleBar -->
+            <Border Grid.Row="0" Background="{StaticResource PanelDarkBrush}" BorderBrush="{StaticResource BorderDarkBrush}" BorderThickness="0,0,0,1">
+                <Grid>
+                    <!-- Left Title & Branding -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                        <TextBlock Text="PLAY" FontSize="14" FontWeight="Bold" Foreground="{StaticResource PrimaryCyanBrush}" />
+                        <TextBlock Text="ARCHIVE" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,16,0" />
+                        <Border Background="#1F00F0FF" BorderBrush="{StaticResource PrimaryCyanBrush}" BorderThickness="1" CornerRadius="4" Padding="8,2">
+                            <TextBlock Text="DASHBOARD" FontSize="10" FontWeight="Bold" Foreground="{StaticResource PrimaryCyanBrush}" />
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Center Live Game Status Indicator -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Visibility="{Binding IsNowPlaying, Converter={StaticResource BoolToVis}}">
+                        <Ellipse Width="10" Height="10" Fill="{StaticResource PrimaryCyanBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                        <TextBlock Text="NOW TRACKING: " FontSize="11" FontWeight="Bold" Foreground="{StaticResource PrimaryCyanBrush}" />
+                        <TextBlock Text="{Binding NowPlayingTitle}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="4,0,0,0" />
+                    </StackPanel>
+
+                    <!-- Right Window Controls -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button Click="BtnMinimize_Click" Width="44" Height="40" Background="Transparent" BorderThickness="0" Foreground="{StaticResource TextSecondaryBrush}" Cursor="Hand">
+                            <TextBlock Text="🗕" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Button>
+                        <Button Click="BtnMaximize_Click" Width="44" Height="40" Background="Transparent" BorderThickness="0" Foreground="{StaticResource TextSecondaryBrush}" Cursor="Hand">
+                            <TextBlock Text="🗖" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Button>
+                        <Button Click="BtnClose_Click" Width="44" Height="40" Background="Transparent" BorderThickness="0" Foreground="{StaticResource TextSecondaryBrush}" Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#FF0055" />
+                                            <Setter Property="Foreground" Value="White" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <TextBlock Text="✕" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Main App Body (Sidebar + Content View) -->
+            <Grid Grid.Row="1" Background="#0B0E14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="240" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Navigation Sidebar -->
+                <Border Grid.Column="0" Background="{StaticResource PanelDarkBrush}" BorderBrush="{StaticResource BorderDarkBrush}" BorderThickness="0,0,1,0">
+                    <Grid Margin="16,20">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Brand Logo Header -->
+                        <StackPanel Grid.Row="0" Margin="0,0,0,24">
+                            <TextBlock Text="PLAYARCHIVE" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBlock Text="Desktop Dashboard" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,2,0,0" />
+                        </StackPanel>
+
+                        <!-- Navigation Menu Radio Buttons -->
+                        <StackPanel Grid.Row="1">
+                            <RadioButton Command="{Binding NavigateDashboardCommand}" IsChecked="True" Style="{StaticResource NavButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📊" Margin="0,0,12,0" />
+                                    <TextBlock Text="Dashboard" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <RadioButton Command="{Binding NavigateLibraryCommand}" Style="{StaticResource NavButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🎮" Margin="0,0,12,0" />
+                                    <TextBlock Text="Game Library" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <RadioButton Command="{Binding NavigateSessionsCommand}" Style="{StaticResource NavButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📜" Margin="0,0,12,0" />
+                                    <TextBlock Text="Session Logs" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <RadioButton Command="{Binding NavigateSettingsCommand}" Style="{StaticResource NavButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="⚙️" Margin="0,0,12,0" />
+                                    <TextBlock Text="Settings" />
+                                </StackPanel>
+                            </RadioButton>
+
+                            <Button Command="{Binding AddGameCommand}" Style="{StaticResource PrimaryButton}" Margin="0,24,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="➕" Margin="0,0,8,0" />
+                                    <TextBlock Text="Add Game" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- Bottom Live Engine Status Pill -->
+                        <Border Grid.Row="2" Background="{StaticResource CardDarkBrush}" CornerRadius="8" Padding="12" Margin="0,16,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Ellipse Width="10" Height="10" Fill="{StaticResource EmeraldBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="TRACKER ENGINE LIVE" FontSize="10" FontWeight="Bold" Foreground="{StaticResource EmeraldBrush}" />
+                                    <TextBlock Text="Monitoring Active Games" FontSize="10" Foreground="{StaticResource TextMutedBrush}" Margin="0,1,0,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Right Main Content Workspace -->
+                <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}" Background="#0B0E14" />
+            </Grid>
+
+        </Grid>
+    </Border>
+</Window>
