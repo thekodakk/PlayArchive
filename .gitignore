@@ -1,0 +1,25 @@
+# Local build output and editor files
+bin/
+obj/
+build/
+.vs/
+.vscode/
+*.user
+*.suo
+*.pdb
+*.exe
+*.dll
+*.obj
+*.o
+
+# Private local configuration and generated data
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.log
+logs/
+cache/
